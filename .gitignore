@@ -159,4 +159,3 @@ mcp_server/tests
 # are a record of a single run, not source.
 *.jsonl
 *.db
-settings.py
