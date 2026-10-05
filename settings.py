@@ -16,6 +16,8 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    BASE_URL: str = "http://localhost"
+
     # --- Google OAuth ---
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""

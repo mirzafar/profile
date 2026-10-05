@@ -176,7 +176,7 @@ class GoogleAuthHandler(BaseHandler, tornado.auth.GoogleOAuth2Mixin):
             t = i18n.make_translator(self.lang)
             self.render("message.html", title=t("google_off_title"), text=t("google_off_text"))
             return
-        redirect_uri = f"{self.request.protocol}://{self.request.host}/auth/google"
+        redirect_uri = f"{settings.BASE_URL}/auth/google"
         if self.get_argument("code", False):
             access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri, code=self.get_argument("code"))
