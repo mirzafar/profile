@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-wrap">
+ <div class="auth-card">
+  <div class="page-head"><h1>{{ title }}</h1></div>
+  <div class="card">
+    <p class="note-center">{{ text }}</p>
+    <div class="alt-link" style="text-align:center;margin-top:16px"><a href="/login">← {{ t("login") }}</a></div>
+  </div>
+ </div>
+</div>
+{% end %}

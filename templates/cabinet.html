@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ t("cabinet") }}</h1>
+  <div class="sub">{{ current_user["name"] or current_user["nickname"] or current_user["email"] }} · {{ current_user["email"] }}{% if current_user["phone"] %} · {{ current_user["phone"] }}{% end %}</div>
+</div>
+
+{% if notice %}<div class="msg ok">{{ t(notice) }}</div>{% end %}
+{% if error %}<div class="msg err">{{ t(error) }}</div>{% end %}
+
+<div class="card">
+  <h3 style="font-size:24px;margin-bottom:6px">{{ t("my_requests") }}</h3>
+  {% if not rows %}
+    <p class="muted" style="margin-top:12px">{{ t("no_requests") }}</p>
+  {% else %}
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>{{ t("req_id") }}</th><th>{{ t("req_date") }}</th>
+        <th>{{ t("req_service") }}</th><th>{{ t("req_message") }}</th>
+        <th>{{ t("req_status") }}</th><th>{{ t("req_notes") }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      {% set r = row["req"] %}
+      <tr>
+        <td>#{{ r["id"] }}</td>
+        <td class="muted">{{ fmt_date(r["created_at"]) }}</td>
+        <td>{{ service_label(r["service"]) }}</td>
+        <td style="max-width:280px">{{ r["message"] or "—" }}</td>
+        <td><span class="tag st-{{ r['status'] }}">{{ status_label(r["status"]) }}</span></td>
+        <td>
+          {% if row["notes"] %}
+            {% for n in row["notes"] %}
+              <div class="note"><div class="meta">{{ fmt_date(n["created_at"]) }}</div>{{ n["text"] }}</div>
+            {% end %}
+          {% else %}<span class="muted">—</span>{% end %}
+        </td>
+      </tr>
+      {% end %}
+    </tbody>
+  </table>
+  </div>
+  {% end %}
+</div>
+
+<div class="card">
+  <h3 style="font-size:24px;margin-bottom:4px">{{ t("change_password") }}</h3>
+  <form action="/cabinet/password" method="post" style="max-width:360px">
+    {% module xsrf_form_html() %}
+    <label>{{ t("new_password") }}</label>
+    <input type="password" name="new_password" required>
+    <div style="margin-top:18px"><button class="btn btn-sm" type="submit">{{ t("save") }}</button></div>
+  </form>
+</div>
+{% end %}

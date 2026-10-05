@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ t("all_requests") }}</h1>
+  <div class="sub">{{ t("total") }}: {{ total }}</div>
+</div>
+
+{% if notice %}<div class="msg ok">{{ t(notice) }}</div>{% end %}
+
+<form class="filters" action="/admin/requests" method="get">
+  <select name="status" onchange="this.form.submit()">
+    <option value="">{{ t("filter_all") }}</option>
+    {% for s in statuses %}
+      <option value="{{ s }}" {{ 'selected' if status == s else '' }}>{{ status_label(s) }}</option>
+    {% end %}
+  </select>
+  <input type="text" name="q" value="{{ query }}" placeholder="{{ t('search') }}…">
+  <input type="text" name="email" value="{{ email }}" placeholder="{{ t('filter_email') }}…">
+  <button class="btn btn-sm" type="submit">{{ t("search") }}</button>
+</form>
+
+<div class="card">
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr>
+      <th>{{ t("req_id") }}</th><th>{{ t("req_date") }}</th><th>{{ t("req_name") }}</th>
+      <th>{{ t("req_contact") }}</th><th>{{ t("req_service") }}</th><th>{{ t("req_message") }}</th>
+      <th>{{ t("client") }}</th><th>{{ t("req_status") }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if not rows %}
+      <tr><td colspan="8" class="muted">{{ t("no_requests") }}</td></tr>
+    {% end %}
+    {% for row in rows %}
+    {% set r = row["req"] %}
+    <tr>
+      <td>#{{ r["id"] }}</td>
+      <td class="muted">{{ fmt_date(r["created_at"]) }}</td>
+      <td>{{ r["name"] }}</td>
+      <td>{{ r["phone"] }}{% if r["email"] %}<br><span class="muted">{{ r["email"] }}</span>{% end %}</td>
+      <td>{{ service_label(r["service"]) }}</td>
+      <td style="max-width:260px">
+        {{ r["message"] or "—" }}
+        {% for n in row["notes"] %}
+          <div class="note"><div class="meta">{{ n["author"] }} · {{ fmt_date(n["created_at"]) }}{{ ' · ✓' if n["visible_to_user"] else '' }}</div>{{ n["text"] }}</div>
+        {% end %}
+        <form class="inline-form" style="margin-top:10px" action="/admin/requests/{{ r['id'] }}/note" method="post">
+          {% module xsrf_form_html() %}
+          <input type="hidden" name="next" value="{{ request.uri }}">
+          <input type="text" name="text" placeholder="{{ t('add_note') }}…" style="min-width:160px">
+          <label style="margin:0;display:inline-flex;align-items:center;gap:5px;text-transform:none;letter-spacing:0;color:var(--ink-soft)">
+            <input type="checkbox" name="visible" value="1" style="width:auto">{{ t("note_visible") }}
+          </label>
+          <button class="btn btn-sm btn-ghost" type="submit">{{ t("add_note") }}</button>
+        </form>
+      </td>
+      <td>{% if row["user"] %}{{ row["user"]["name"] or row["user"]["nickname"] or row["user"]["email"] }}{% else %}<span class="muted">{{ t("anonymous") }}</span>{% end %}</td>
+      <td>
+        <span class="tag st-{{ r['status'] }}">{{ status_label(r["status"]) }}</span>
+        <form class="inline-form" style="margin-top:8px" action="/admin/requests/{{ r['id'] }}/status" method="post">
+          {% module xsrf_form_html() %}
+          <input type="hidden" name="next" value="{{ request.uri }}">
+          <select name="status">
+            {% for s in statuses %}
+              <option value="{{ s }}" {{ 'selected' if r['status'] == s else '' }}>{{ status_label(s) }}</option>
+            {% end %}
+          </select>
+          <button class="btn btn-sm" type="submit">{{ t("update_status") }}</button>
+        </form>
+      </td>
+    </tr>
+    {% end %}
+  </tbody>
+</table>
+</div>
+</div>
+
+{% if pages > 1 %}
+<div class="pager">
+  {% for p in range(1, pages + 1) %}
+    {% if p == page %}
+      <span class="cur">{{ p }}</span>
+    {% else %}
+      <a href="/admin/requests?page={{ p }}{% if status %}&status={{ status }}{% end %}{% if query %}&q={{ url_escape(query) }}{% end %}{% if email %}&email={{ url_escape(email) }}{% end %}">{{ p }}</a>
+    {% end %}
+  {% end %}
+</div>
+{% end %}
+{% end %}

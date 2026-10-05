@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ t("dashboard") }}</h1>
+  <div class="sub"><a href="/admin/requests" style="color:var(--accent-deep);font-weight:500">{{ t("all_requests") }} →</a></div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat"><div class="v">{{ counts["total"] }}</div><div class="l">{{ t("total") }}</div></div>
+  <div class="stat"><div class="v">{{ counts["new"] }}</div><div class="l">{{ t("st_new") }}</div></div>
+  <div class="stat"><div class="v">{{ counts["in_progress"] }}</div><div class="l">{{ t("st_in_progress") }}</div></div>
+  <div class="stat"><div class="v">{{ counts["done"] }}</div><div class="l">{{ t("st_done") }}</div></div>
+  <div class="stat"><div class="v">{{ counts["rejected"] }}</div><div class="l">{{ t("st_rejected") }}</div></div>
+</div>
+{% end %}

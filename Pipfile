@@ -1,0 +1,13 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+tornado = ">=6.4"
+pydantic-settings = ">=2.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

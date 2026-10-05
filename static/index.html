@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-ru="Навигатор возможностей">Мүмкіндіктер навигаторы</title>
+<meta name="description" content="Біліміңді, тәжірибеңді, қабілетің мен ойлауыңды нақты коммерциялық мүмкіндікке айналдыру.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap&subset=cyrillic,cyrillic-ext,latin,latin-ext" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F2EC;
+    --bg-2:#ECE8DF;
+    --ink:#17211F;
+    --ink-soft:#3A423F;
+    --muted:#827D73;
+    --line:#E3DED3;
+    --line-strong:#D2CBBD;
+    --accent:#1C9C97;
+    --accent-deep:#14756F;
+    --accent-soft:#E6F3F1;
+    --paper:#FCFBF7;
+    --maxw:1240px;
+    --ease:cubic-bezier(.16,.84,.44,1);
+    --radius:22px;
+    --radius-sm:14px;
+    --radius-pill:999px;
+    --shadow-sm:0 8px 24px -14px rgba(20,35,33,.30);
+    --shadow:0 30px 64px -34px rgba(20,35,33,.34);
+    --shadow-teal:0 24px 54px -28px rgba(28,156,151,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    font-size:17px;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:#fff}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;letter-spacing:-.01em;line-height:1.08}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 40px}
+  @media(max-width:720px){.wrap{padding:0 22px}}
+
+  /* kicker / labels */
+  .kicker{
+    font-size:11.5px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--muted);display:inline-flex;align-items:center;gap:14px;
+  }
+  .kicker .num{color:var(--accent);font-variant-numeric:tabular-nums}
+  .kicker .bar{width:34px;height:1px;background:var(--line-strong)}
+
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:12px;
+    font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+    padding:18px 34px;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    border-radius:var(--radius-pill);
+    box-shadow:var(--shadow-teal);
+    transition:background .45s var(--ease),color .45s var(--ease),transform .45s var(--ease),box-shadow .45s var(--ease),border-color .45s var(--ease);
+    cursor:pointer;position:relative;
+  }
+  .btn:hover{background:var(--accent-deep);border-color:var(--accent-deep);transform:translateY(-2px);box-shadow:0 30px 64px -26px rgba(28,156,151,.6)}
+  .btn .arw{transition:transform .5s var(--ease)}
+  .btn:hover .arw{transform:translateX(6px)}
+  .btn-ghost{background:transparent;color:var(--accent);box-shadow:none}
+  .btn-ghost:hover{background:var(--accent);color:#fff}
+
+  /* link underline */
+  .ulink{position:relative;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;padding-bottom:4px}
+  .ulink:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+  .ulink:hover:after{transform:scaleX(1);transform-origin:left}
+
+  /* ---------- NAV ---------- */
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .5s var(--ease),border-color .5s var(--ease),backdrop-filter .5s}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:76px;border-bottom:1px solid transparent;transition:border-color .5s}
+  header.nav.scrolled{background:rgba(244,242,236,.78);backdrop-filter:saturate(1.3) blur(16px)}
+  header.nav.scrolled .nav-inner{border-color:var(--line)}
+  .brand{display:flex;align-items:center;gap:12px;font-family:'Cormorant Garamond',serif;font-size:21px;letter-spacing:.01em}
+  .brand .dot{width:7px;height:7px;border:1px solid var(--accent);transform:rotate(45deg);display:inline-block}
+  .nav-right{display:flex;align-items:center;gap:22px}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .lang{display:inline-flex;align-items:center;gap:1px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);padding:2px}
+  .lang button{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;padding:5px 10px;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:var(--radius-pill);transition:background .3s var(--ease),color .3s var(--ease)}
+  .lang button:hover{color:var(--ink)}
+  .lang button.active{background:var(--accent);color:#fff}
+  .nav-links a.navlink{font-size:13px;letter-spacing:.01em;color:var(--ink-soft);transition:color .3s}
+  .nav-links a.navlink:hover{color:var(--accent)}
+  .nav-cta{font-size:13px;letter-spacing:.01em;border:1px solid var(--accent);color:var(--accent-deep);padding:9px 18px;border-radius:var(--radius-pill);transition:all .4s var(--ease)}
+  .nav-cta:hover{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:var(--shadow-teal)}
+  .burger{display:none;flex-direction:column;gap:5px;width:30px;cursor:pointer;background:none;border:none}
+  .burger span{height:1.5px;width:100%;background:var(--ink);transition:.4s var(--ease)}
+
+  /* mobile menu */
+  .mobile-menu{position:fixed;inset:0;background:var(--bg);z-index:99;transform:translateY(-100%);transition:transform .7s var(--ease);display:flex;flex-direction:column;justify-content:center;padding:40px;gap:4px}
+  .mobile-menu.open{transform:translateY(0)}
+  .mobile-menu a{font-family:'Cormorant Garamond',serif;font-size:34px;padding:12px 0;border-bottom:1px solid var(--line);color:var(--ink)}
+  .mobile-menu .mm-foot{margin-top:40px;border:none;font-family:'Inter';font-size:14px;color:var(--muted);letter-spacing:.08em}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:168px 0 100px;position:relative}
+  .hero .avail{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:46px}
+  .hero .avail .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);position:relative}
+  .hero .avail .pulse:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--accent);animation:pulse 2.4s ease-out infinite}
+  @keyframes pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  .hero h1{font-size:clamp(46px,8.4vw,116px);line-height:.98;letter-spacing:-.02em;max-width:14ch}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero-slogan{margin-top:40px;display:flex;flex-direction:column;gap:2px;font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.4vw,28px);font-style:italic;color:var(--ink-soft);line-height:1.35}
+  .hero-bottom{margin-top:72px;display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:end;padding-top:46px;border-top:1px solid var(--line)}
+  .hero-offer p{font-size:18px;color:var(--ink-soft);max-width:48ch;line-height:1.7}
+  .hero-offer .lead{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(22px,2.6vw,30px);color:var(--ink);margin-bottom:24px;line-height:1.25}
+  .hero-actions{display:flex;flex-direction:column;gap:22px;align-items:flex-start}
+  .hero-meta{display:flex;gap:40px}
+  .hero-meta .m .v{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--ink)}
+  .hero-meta .m .l{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+  /* section base */
+  section{position:relative}
+  .sec{padding:120px 0}
+  .sec-head{display:grid;grid-template-columns:1fr;gap:28px;margin-bottom:64px;max-width:900px}
+  .sec-head h2{font-size:clamp(34px,5vw,64px);letter-spacing:-.015em}
+  .sec-head p.sub{font-size:19px;color:var(--ink-soft);max-width:60ch;line-height:1.65}
+
+  /* ABOUT */
+  .about{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:start}
+  .about-portrait{aspect-ratio:3/4;background:linear-gradient(150deg,#0e3230,#14756f 55%,#1c9c97);position:relative;overflow:hidden;border:none;border-radius:var(--radius);box-shadow:var(--shadow)}
+  .about-portrait .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+  .about-portrait .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(18,24,22,.78) 0%,rgba(18,24,22,.14) 44%,transparent 72%)}
+  .about-portrait .mono{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.08);font-family:'Cormorant Garamond',serif;font-size:clamp(90px,18vw,220px);font-style:italic;letter-spacing:-.04em;line-height:1}
+  .about-portrait .tag{position:absolute;bottom:26px;left:26px;right:26px;display:flex;justify-content:space-between;align-items:flex-end;color:rgba(255,255,255,.72);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .about-portrait .tag .nm{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;letter-spacing:0;text-transform:none;color:#fff}
+  .portrait-wrap{position:relative}
+  .portrait-inset{position:absolute;top:-30px;right:-30px;width:40%;aspect-ratio:3/4;object-fit:cover;object-position:center 32%;border-radius:16px;border:6px solid var(--paper);box-shadow:var(--shadow);z-index:2}
+  .about-body h2{font-size:clamp(30px,4.2vw,52px);margin:26px 0 30px;max-width:16ch}
+  .about-body p{font-size:18px;color:var(--ink-soft);margin-bottom:22px;line-height:1.7;max-width:52ch}
+  .about-list{list-style:none;margin:28px 0 34px;border-top:1px solid var(--line-strong)}
+  .about-list li{padding:15px 0;border-bottom:1px solid var(--line);font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--ink);display:flex;align-items:baseline;gap:16px}
+  .about-list li span{font-family:'Inter';font-size:12px;color:var(--accent);letter-spacing:.1em}
+  .pull{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(22px,3vw,34px);color:var(--ink);line-height:1.3;padding-left:26px;border-left:2px solid var(--accent);margin-top:14px}
+
+  /* EXPERT positioning */
+  .expert .lines{display:grid;gap:0;margin-top:20px;border-top:1px solid var(--line)}
+  .expert .lines .ln{padding:30px 0;border-bottom:1px solid var(--line);font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3.2vw,36px);color:var(--ink-soft);transition:color .5s,padding-left .6s var(--ease);line-height:1.2}
+  .expert .lines .ln:hover{color:var(--ink);padding-left:16px}
+  .flow{margin-top:60px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px}
+  .flow .step{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.6vw,30px);color:var(--ink)}
+  .flow .sep{color:var(--accent);font-size:20px}
+
+  /* ROLES */
+  .roles{background:radial-gradient(120% 120% at 15% 0%,#123b39 0%,#0e2b2a 55%,#0b201f 100%);color:var(--paper);border-top:none}
+  .roles .kicker{color:rgba(255,255,255,.5)}
+  .roles .kicker .bar{background:rgba(255,255,255,.25)}
+  .roles .sec-head h2{color:var(--paper)}
+  .roles .sec-head p.sub{color:rgba(255,255,255,.62)}
+  .roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.14)}
+  .role{padding:52px 48px 52px 0;border-bottom:1px solid rgba(255,255,255,.14);position:relative}
+  .role:nth-child(odd){border-right:1px solid rgba(255,255,255,.14);padding-right:48px}
+  .role:nth-child(even){padding-left:48px}
+  .role .rn{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--accent);font-style:italic;margin-bottom:22px;display:block}
+  .role h3{font-size:clamp(26px,3vw,38px);color:var(--paper);margin-bottom:18px}
+  .role p{color:rgba(255,255,255,.66);font-size:16.5px;line-height:1.7;max-width:46ch}
+  .role .maps{list-style:none;margin-top:18px}
+  .role .maps li{color:rgba(255,255,255,.78);font-size:16px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:20px}
+  .role .maps li b{font-weight:400;color:#fff}
+  .role .maps li .ar{color:var(--accent)}
+  @media(max-width:720px){
+    .roles-grid{grid-template-columns:1fr}
+    .role,.role:nth-child(odd){padding:40px 0;border-right:none}
+    .role:nth-child(even){padding:40px 0}
+  }
+
+  /* FORMULA */
+  .formula{text-align:center}
+  .formula .fx{display:flex;flex-direction:column;gap:38px;align-items:center;margin-top:50px}
+  .formula .row{font-family:'Cormorant Garamond',serif;line-height:1.15}
+  .formula .inp{font-size:clamp(20px,3vw,34px);color:var(--ink-soft)}
+  .formula .out{font-size:clamp(34px,6vw,70px);color:var(--ink)}
+  .formula .out em{font-style:italic;color:var(--accent)}
+  .formula .ar{color:var(--accent);font-size:24px;margin:6px 0;display:block}
+
+  /* SERVICES */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:20px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:42px 34px 36px;display:flex;flex-direction:column;transition:transform .6s var(--ease),box-shadow .6s var(--ease),border-color .6s;position:relative;min-height:100%;box-shadow:var(--shadow-sm)}
+  .card:hover{transform:translateY(-8px);box-shadow:var(--shadow);border-color:transparent}
+  .card.feat{background:linear-gradient(165deg,#14756f,#0e3230);border-color:transparent;box-shadow:var(--shadow-teal)}
+  .card.feat:hover{box-shadow:0 36px 72px -28px rgba(28,156,151,.55)}
+  .card .cnum{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--accent);margin-bottom:auto}
+  .card .ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:34px}
+  .card .badge{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-deep);background:var(--accent-soft);border:1px solid transparent;padding:7px 13px;border-radius:var(--radius-pill)}
+  .card.feat .badge{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3)}
+  .card h3{font-size:30px;margin:0 0 6px;line-height:1.1}
+  .card .ckk{font-size:13px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-bottom:22px}
+  .card.feat h3{color:#fff}.card.feat .ckk{color:rgba(255,255,255,.55)}
+  .card .cdesc{font-size:15.5px;color:var(--ink-soft);line-height:1.65;margin-bottom:26px}
+  .card.feat .cdesc{color:rgba(255,255,255,.7)}
+  .card ul.feats{list-style:none;margin:0 0 30px;flex-grow:0}
+  .card ul.feats li{font-size:14.5px;color:var(--ink-soft);padding:9px 0;border-top:1px solid var(--line);display:flex;gap:12px;align-items:baseline}
+  .card ul.feats li:before{content:"";width:5px;height:5px;background:var(--accent);flex:0 0 auto;transform:translateY(-2px)}
+  .card.feat ul.feats li{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.12)}
+  .card .price-row{display:flex;align-items:baseline;justify-content:space-between;margin-top:auto;padding-top:24px;border-top:1px solid var(--line);margin-bottom:26px}
+  .card.feat .price-row{border-color:rgba(255,255,255,.14)}
+  .card .price{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--ink)}
+  .card.feat .price{color:#fff}
+  .card .fmt{font-size:12.5px;color:var(--muted);text-align:right;letter-spacing:.03em;line-height:1.4}
+  .card.feat .fmt{color:rgba(255,255,255,.55)}
+  .card .btn{width:100%;justify-content:center}
+  .card.feat .btn{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .card.feat .btn:hover{background:transparent;color:#fff}
+
+  /* result note under services */
+  .result-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .result-list li{font-size:13px;color:var(--ink-soft);border:1px solid var(--line);padding:9px 17px;letter-spacing:.02em;background:var(--paper);border-radius:var(--radius-pill);box-shadow:var(--shadow-sm)}
+
+  /* DECISION guide */
+  .decide{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .decide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:20px}
+  .dcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:38px 32px;transition:border-color .5s,transform .5s var(--ease),box-shadow .5s var(--ease);box-shadow:var(--shadow-sm)}
+  .dcard:hover{border-color:transparent;transform:translateY(-6px);box-shadow:var(--shadow)}
+  .dcard .q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:25px;color:var(--ink);line-height:1.3;min-height:4.2em;margin-bottom:26px}
+  .dcard .arrow{color:var(--accent);font-size:20px;margin-bottom:8px}
+  .dcard .ans{font-size:14px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;color:var(--ink)}
+
+  /* HOW IT WORKS */
+  .steps{border-top:1px solid var(--line);margin-top:20px}
+  .step-row{display:grid;grid-template-columns:120px 1fr 1fr;gap:40px;padding:40px 0;border-bottom:1px solid var(--line);align-items:baseline;transition:background .5s}
+  .step-row .sidx{font-family:'Cormorant Garamond',serif;font-size:52px;color:var(--line-strong);font-style:italic;transition:color .5s}
+  .step-row:hover .sidx{color:var(--accent)}
+  .step-row h3{font-size:30px;color:var(--ink)}
+  .step-row p{font-size:16px;color:var(--ink-soft);line-height:1.65;max-width:46ch}
+  @media(max-width:720px){.step-row{grid-template-columns:1fr;gap:12px;padding:30px 0}.step-row .sidx{font-size:40px}}
+
+  /* WHO / NOT */
+  .who-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);background:var(--paper);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+  .who-col{padding:48px 44px}
+  .who-col.left{border-right:1px solid var(--line)}
+  .who-col h3{font-size:30px;margin-bottom:8px;display:flex;align-items:center;gap:14px}
+  .who-col .ico{width:26px;height:26px;border:1px solid var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;flex:0 0 auto}
+  .who-col.no .ico{border-color:var(--muted);color:var(--muted)}
+  .who-col .sm{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:30px}
+  .who-col ul{list-style:none}
+  .who-col li{padding:13px 0;border-bottom:1px solid var(--line);font-size:16px;color:var(--ink-soft);display:flex;gap:12px}
+  .who-col li:last-child{border-bottom:none}
+  .who-col.yes li:before{content:"—";color:var(--accent)}
+  .who-col.no li:before{content:"—";color:var(--muted)}
+  .principle{margin-top:36px;background:linear-gradient(135deg,#14756f,#0e3230);color:var(--paper);padding:46px 48px;border-radius:var(--radius);box-shadow:var(--shadow-teal)}
+  .principle .pl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:20px}
+  .principle p{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,32px);font-style:italic;line-height:1.35;max-width:30ch}
+  .principle p + p{margin-top:16px;color:rgba(255,255,255,.8)}
+  @media(max-width:720px){.who-grid{grid-template-columns:1fr}.who-col.left{border-right:none;border-bottom:1px solid var(--line)}.who-col{padding:36px 26px}}
+
+  /* FAQ */
+  .faq-list{border-top:1px solid var(--line);margin-top:20px}
+  .faq-item{border-bottom:1px solid var(--line)}
+  .faq-q{width:100%;background:none;border:none;text-align:left;cursor:pointer;padding:32px 0;display:flex;justify-content:space-between;align-items:center;gap:30px;font-family:'Cormorant Garamond',serif;font-size:clamp(21px,2.6vw,30px);color:var(--ink);transition:color .4s}
+  .faq-q:hover{color:var(--accent)}
+  .faq-q .pm{position:relative;width:20px;height:20px;flex:0 0 auto}
+  .faq-q .pm:before,.faq-q .pm:after{content:"";position:absolute;background:var(--accent);transition:transform .45s var(--ease)}
+  .faq-q .pm:before{top:9px;left:0;width:20px;height:1.5px}
+  .faq-q .pm:after{left:9px;top:0;width:1.5px;height:20px}
+  .faq-item.open .pm:after{transform:rotate(90deg);opacity:0}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .6s var(--ease)}
+  .faq-a .inner{padding:0 60px 34px 0;font-size:17px;color:var(--ink-soft);line-height:1.7;max-width:70ch}
+
+  /* FINAL CTA */
+  .final{background:radial-gradient(130% 120% at 50% 0%,#14756f 0%,#0e3230 55%,#0b201f 100%);color:var(--paper);text-align:center;padding:150px 0}
+  .final .kicker{color:rgba(255,255,255,.5);justify-content:center}
+  .final .kicker .bar{background:rgba(255,255,255,.3)}
+  .final h2{font-size:clamp(38px,6.5vw,88px);color:var(--paper);margin:36px auto 30px;max-width:16ch;line-height:1.02}
+  .final h2 em{font-style:italic;color:var(--accent)}
+  .final .ftext{max-width:60ch;margin:0 auto 20px;color:rgba(255,255,255,.72);font-size:18px;line-height:1.7}
+  .final .fwords{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 28px;margin:40px 0 50px}
+  .final .fwords span{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,3vw,30px);color:rgba(255,255,255,.9)}
+  .final .fwords span b{font-weight:400;color:var(--accent)}
+  .final .closing{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,34px);color:#fff;margin-bottom:46px}
+  .final .btn{background:var(--paper);color:var(--ink);border-color:var(--paper);padding:22px 46px}
+  .final .btn:hover{background:transparent;color:#fff}
+
+  /* FOOTER */
+  footer{background:var(--bg);padding:90px 0 40px;border-top:1px solid var(--line)}
+  .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:50px;padding-bottom:70px;border-bottom:1px solid var(--line)}
+  .foot-brand h3{font-family:'Cormorant Garamond',serif;font-size:34px;margin-bottom:22px}
+  .foot-brand .slg{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--ink-soft);line-height:1.5}
+  .foot-col h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:24px;font-family:'Inter';font-weight:500}
+  .foot-col a{display:block;font-size:17px;color:var(--ink-soft);padding:7px 0;transition:color .3s}
+  .foot-col a:hover{color:var(--accent)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:34px;font-size:13px;color:var(--muted);letter-spacing:.04em}
+  @media(max-width:720px){.foot-top{grid-template-columns:1fr;gap:40px}.foot-bottom{flex-direction:column;gap:14px;align-items:flex-start}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* responsive */
+  @media(max-width:980px){
+    .hero-bottom{grid-template-columns:1fr;gap:44px}
+    .about-grid{grid-template-columns:1fr;gap:44px}
+    .portrait-wrap{max-width:440px}
+    .svc-grid,.decide-grid{grid-template-columns:1fr}
+    .nav-links .navlink{display:none}
+  }
+  @media(max-width:720px){
+    body{font-size:16px}
+    .sec{padding:80px 0}
+    .hero{padding:130px 0 70px}
+    .hero-meta{gap:28px}
+    .nav-links{display:none}
+    .burger{display:flex}
+    .nav-cta{display:none}
+    .final{padding:100px 0}
+    .flow{gap:10px 14px}
+    .portrait-inset{width:36%;top:-16px;right:-14px;border-width:4px;border-radius:12px}
+  }
+
+  /* lead form */
+  .lead-wrap{max-width:580px;margin:56px auto 0;text-align:left}
+  .lead-form{background:var(--paper);border-radius:var(--radius);padding:34px;box-shadow:var(--shadow);display:grid;gap:16px;position:relative}
+  .lead-form .lead-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:var(--ink);text-align:center;margin-bottom:4px}
+  .lead-form .lf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .lead-form label{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .lead-form input,.lead-form select,.lead-form textarea{width:100%;padding:13px 15px;border:1px solid var(--line-strong);border-radius:12px;background:#fff;font:inherit;font-size:15px;color:var(--ink);transition:border-color .3s,box-shadow .3s}
+  .lead-form textarea{min-height:88px;resize:vertical}
+  .lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .lead-form .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+  .lead-btn{width:100%;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:17px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:var(--radius-pill);cursor:pointer;transition:background .35s var(--ease)}
+  .lead-btn:hover{background:var(--accent-deep)}
+  .lead-btn:disabled{opacity:.6;cursor:default}
+  .lead-status{font-size:14px;text-align:center;min-height:1.1em}
+  .lead-status.ok{color:var(--accent-deep)}
+  .lead-status.err{color:#C0563F}
+  @media(max-width:560px){.lead-form .lf-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand"><span class="dot"></span><span data-ru="Навигатор возможностей">Мүмкіндіктер навигаторы</span></a>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a href="#about" class="navlink" data-ru="Кто я">Мен кіммін</a>
+        <a href="#services" class="navlink" data-ru="Услуги">Қызметтер</a>
+        <a href="#how" class="navlink" data-ru="Как мы работаем">Қалай жұмыс істейміз</a>
+        <a href="#faq" class="navlink">FAQ</a>
+        <a href="/cabinet" class="navlink" data-ru="Кабинет">Кабинет</a>
+        <a href="#contact" class="nav-cta" data-ru="Записаться на консультацию">Консультацияға жазылу</a>
+      </nav>
+      <div class="lang" id="lang">
+        <button type="button" data-lang="kz">KZ</button>
+        <button type="button" data-lang="ru">RU</button>
+      </div>
+      <button class="burger" id="burger" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" data-ru="Кто я">Мен кіммін</a>
+  <a href="#expert" data-ru="Экспертное направление">Эксперттік бағыт</a>
+  <a href="#services" data-ru="Услуги">Қызметтер</a>
+  <a href="#how" data-ru="Как мы работаем">Қалай жұмыс істейміз</a>
+  <a href="#who" data-ru="Для кого">Кімге арналған</a>
+  <a href="#faq">FAQ</a>
+  <a href="/cabinet" data-ru="Кабинет">Кабинет</a>
+  <a href="#contact" style="color:var(--accent)" data-ru="Записаться на консультацию">Консультацияға жазылу</a>
+  <div class="mm-foot">WhatsApp · +7 705 112 11 12</div>
+</div>
+
+<a id="top"></a>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="avail reveal"><span class="pulse"></span><span data-ru="Индивидуальная работа · Онлайн · Набор 2026 открыт">Жеке жұмыс · Онлайн · 2026 қабылдау ашық</span></div>
+    <h1 class="reveal" data-ru='Преврати свою мысль в <em>возможность</em>.'>Ойыңды <em>мүмкіндікке</em> айналдыр.</h1>
+    <div class="hero-slogan reveal">
+      <span data-ru="Мысль — в возможность.">Ойыңды — мүмкіндікке.</span>
+      <span data-ru="Знания — в ценность.">Біліміңді — құндылыққа.</span>
+      <span data-ru="Способности — в доход.">Қабілетіңді — табысқа.</span>
+    </div>
+
+    <div class="hero-bottom reveal">
+      <div class="hero-offer">
+        <p class="lead" data-ru="Сколько возможностей в твоих мыслях ещё не превратилось в деньги?">Сенің ойыңда ақшаға айналмаған қанша мүмкіндік бар?</p>
+        <p data-ru="Твои знания. Твой опыт. Твои способности. Твои идеи. Всё это — твой потенциал. Я помогаю выявить в тебе возможности знаний, опыта, способностей и мышления и превратить их в конкретное направление, дело и модель дохода.">Сенің білімің. Сенің тәжірибең. Сенің қабілетің. Сенің идеяларың. Осының бәрі — сенің әлеуетің. Мен сенің бойыңдағы білім, тәжірибе, қабілет және ойлау мүмкіндіктерін анықтап, оларды нақты бағытқа, іске және табыс моделіне айналдыруға көмектесемін.</p>
+      </div>
+      <div class="hero-actions">
+        <a href="#contact" class="btn" data-ru='Записаться на личную консультацию <span class="arw">→</span>'>Жеке консультацияға жазылу <span class="arw">→</span></a>
+        <div class="hero-meta">
+          <div class="m"><div class="v">3</div><div class="l" data-ru="Формата работы">Жұмыс форматы</div></div>
+          <div class="m"><div class="v">60–90′</div><div class="l" data-ru="Стратегическая сессия">Стратегиялық сессия</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec about" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="portrait-wrap reveal">
+        <div class="about-portrait">
+          <img class="photo" src="/static/portrait.jpg" alt="Мүмкіндіктер навигаторы" loading="lazy">
+          <div class="scrim"></div>
+          <div class="tag">
+            <span class="nm" data-ru="Навигатор<br>возможностей">Мүмкіндіктер<br>навигаторы</span>
+            <span>EST.<br>2026</span>
+          </div>
+        </div>
+        <img class="portrait-inset" src="/static/p2.jpg" alt="" loading="lazy">
+      </div>
+      <div class="about-body reveal">
+        <div class="kicker" data-ru='<span class="num">01</span><span class="bar"></span>Кто я'><span class="num">01</span><span class="bar"></span>Мен кіммін</div>
+        <h2 data-ru="Я — навигатор твоих возможностей.">Мен — сенің мүмкіндіктеріңнің навигаторымын.</h2>
+        <p data-ru="Я не придумываю бизнес за человека. Я помогаю собрать твои ресурсы в единую систему и определить, где именно в них есть реальная коммерческая возможность.">Мен адамның орнына бизнес ойлап таппаймын. Мен сенің бойыңдағы ресурстарды бір жүйеге біріктіріп, олардың қай жерінде нақты коммерциялық мүмкіндік бар екенін анықтауға көмектесемін.</p>
+        <ul class="about-list">
+          <li data-ru='<span>a</span>твои знания'><span>a</span>біліміңді</li>
+          <li data-ru='<span>b</span>твой опыт'><span>b</span>тәжірибеңді</li>
+          <li data-ru='<span>c</span>твои способности'><span>c</span>қабілетіңді</li>
+          <li data-ru='<span>d</span>твоё мышление'><span>d</span>ойлау қабілетіңді</li>
+          <li data-ru='<span>e</span>твои идеи'><span>e</span>идеяларыңды</li>
+        </ul>
+        <p class="pull" data-ru="Моя цель — не показать тебе свой путь, а помочь тебе увидеть свой собственный.">Менің мақсатым — саған өз жолымды көрсету емес. Сенің өз жолыңды көруге көмектесу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERT POSITIONING -->
+<section class="sec expert" id="expert">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">02</span><span class="bar"></span>Экспертное направление'><span class="num">02</span><span class="bar"></span>Эксперттік бағыт</div>
+      <h2 data-ru="Превращение мышления в коммерцию">Ойлау қабілетін коммерцияға айналдыру</h2>
+      <p class="sub" data-ru="Проблема не в отсутствии возможности. Проблема — в том, чтобы её правильно увидеть.">Мәселе — мүмкіндіктің жоқтығында емес. Мәселе — оны дұрыс көруде.</p>
+    </div>
+    <div class="lines reveal">
+      <div class="ln" data-ru="У идеи в твоей голове может быть цена.">Сенің басыңдағы идеяның құны болуы мүмкін.</div>
+      <div class="ln" data-ru="У опыта, который ты собирал годами, может быть цена.">Сенің жылдар бойы жинаған тәжірибеңнің құны болуы мүмкін.</div>
+      <div class="ln" data-ru="У того, что ты понимаешь что-то лучше других, может быть цена.">Сенің бір нәрсені басқалардан жақсы түсінуіңнің құны болуы мүмкін.</div>
+      <div class="ln" data-ru="У твоей способности решать определённую проблему может быть цена.">Сенің белгілі бір мәселені шеше алатыныңның құны болуы мүмкін.</div>
+    </div>
+    <div class="flow reveal">
+      <span class="step" data-ru="Увидеть">Көру</span><span class="sep">→</span>
+      <span class="step" data-ru="Определить">Анықтау</span><span class="sep">→</span>
+      <span class="step" data-ru="Связать">Байланыстыру</span><span class="sep">→</span>
+      <span class="step" data-ru="Структурировать">Құрылымдау</span><span class="sep">→</span>
+      <span class="step" data-ru="Коммерциализировать">Коммерциялау</span>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="sec roles">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">03</span><span class="bar"></span>Моя роль'><span class="num">03</span><span class="bar"></span>Менің рөлім</div>
+      <h2 data-ru="В одном человеке — четыре инженера">Бір адамның ішінде — төрт инженер</h2>
+      <p class="sub" data-ru="На каждом этапе — от идеи до модели дохода — я выполняю конкретную роль.">Идеядан табыс моделіне дейінгі әр кезеңде нақты рөл атқарамын.</p>
+    </div>
+    <div class="roles-grid reveal">
+      <div class="role">
+        <span class="rn">4.1</span>
+        <h3 data-ru="Генератор возможностей">Мүмкіндіктер генераторы</h3>
+        <p data-ru="Мы не останавливаемся на одной твоей идее. В твоих знаниях и опыте мы видим несколько возможных направлений.">Сенің бір ғана идеяңмен тоқтап қалмаймыз. Білімің мен тәжірибеңнен бірнеше ықтимал бағытты көреміз.</p>
+      </div>
+      <div class="role">
+        <span class="rn">4.2</span>
+        <h3 data-ru="Навигатор возможностей">Мүмкіндіктер навигаторы</h3>
+        <p data-ru="Из всех направлений определяем, какое важно, какое тебе подходит, с какого начать и у какого есть коммерческий потенциал.">Барлық бағыттың ішінен қайсысы маңызды, қайсысы саған сәйкес, қайсысынан бастау керек және қайсысының коммерциялық потенциалы бар екенін анықтаймыз.</p>
+      </div>
+      <div class="role">
+        <span class="rn">4.3</span>
+        <h3 data-ru="Инженер мышления">Ойлау қабілетінің инженері</h3>
+        <p data-ru="Систематизируем разрозненные идеи. Переходим от «я это знаю» к уровню «что и кому я могу это предложить?».">Шашыраңқы идеяларды жүйелейміз. «Мен мұны білемін» деген жерден «Мен осыны не үшін және кімге ұсына аламын?» деген деңгейге өтеміз.</p>
+      </div>
+      <div class="role">
+        <span class="rn">4.4</span>
+        <h3 data-ru="Инженер коммерческой возможности">Коммерциялық мүмкіндік инженері</h3>
+        <ul class="maps">
+          <li data-ru='<b>Твои знания</b><span class="ar">→ в продукт</span>'><b>Білімің</b><span class="ar">→ өнімге</span></li>
+          <li data-ru='<b>Твой опыт</b><span class="ar">→ в услугу</span>'><b>Тәжірибең</b><span class="ar">→ қызметке</span></li>
+          <li data-ru='<b>Твои способности</b><span class="ar">→ в решение</span>'><b>Қабілетің</b><span class="ar">→ шешімге</span></li>
+          <li data-ru='<b>Твоя идея</b><span class="ar">→ в бизнес-модель</span>'><b>Идеяң</b><span class="ar">→ бизнес-модельге</span></li>
+          <li data-ru='<b>Твоя мысль</b><span class="ar">→ в коммерцию</span>'><b>Ойың</b><span class="ar">→ коммерцияға</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULA -->
+<section class="sec formula">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin:0 auto 10px;text-align:center;justify-items:center">
+      <div class="kicker" style="justify-content:center" data-ru='<span class="num">04</span><span class="bar"></span>Формула работы'><span class="num">04</span><span class="bar"></span>Жұмыс формуласы</div>
+      <h2 data-ru="Превращение твоей возможности в модель дохода">Сендегі мүмкіндікті табыс моделіне айналдыру</h2>
+    </div>
+    <div class="fx reveal">
+      <div class="row">
+        <div class="inp" data-ru="Знания + Опыт + Способности + Мышление">Білім + Тәжірибе + Қабілет + Ойлау</div>
+        <span class="ar">↓</span>
+        <div class="out" data-ru="<em>Возможность</em>"><em>Мүмкіндік</em></div>
+      </div>
+      <div class="row">
+        <div class="inp" data-ru="Возможность + Рынок">Мүмкіндік + Нарық</div>
+        <span class="ar">↓</span>
+        <div class="out" data-ru="<em>Ценность</em>"><em>Құндылық</em></div>
+      </div>
+      <div class="row">
+        <div class="inp" data-ru="Ценность + Правильная модель">Құндылық + Дұрыс модель</div>
+        <span class="ar">↓</span>
+        <div class="out" data-ru="<em>Доход</em>"><em>Табыс</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="sec" id="services" style="border-top:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">05</span><span class="bar"></span>Услуги и цены'><span class="num">05</span><span class="bar"></span>Қызметтер мен баға</div>
+      <h2 data-ru="Три формата — одна цель">Үш формат — бір мақсат</h2>
+      <p class="sub" data-ru="На каком бы этапе ты ни был — есть подходящий формат работы.">Қай кезеңде тұрсаң да — саған сәйкес жұмыс форматы бар.</p>
+    </div>
+    <div class="svc-grid">
+
+      <div class="card reveal">
+        <div class="ctop"><span class="cnum">01</span><span class="badge">Консультация</span></div>
+        <h3 data-ru="Увидь свою возможность">Өзіңдегі мүмкіндікті көр</h3>
+        <div class="ckk" data-ru="Личная стратегическая сессия">Жеке стратегиялық сессия</div>
+        <p class="cdesc" data-ru="Это не мотивационная встреча. Это личная стратегическая сессия, на которой мы анализируем твои текущие профессиональные и коммерческие возможности.">Бұл мотивациялық кездесу емес. Бұл — сенің қазіргі кәсіби және коммерциялық мүмкіндіктеріңді талдайтын жеке стратегиялық сессия.</p>
+        <ul class="feats">
+          <li data-ru="Карта возможностей">Мүмкіндіктер картасы</li>
+          <li data-ru="Приоритетное направление">Басым бағыт</li>
+          <li data-ru="Идея монетизации">Монетизация идеясы</li>
+          <li data-ru="План первых действий">Алғашқы әрекет жоспары</li>
+        </ul>
+        <div class="price-row">
+          <div class="price">50 000 ₸</div>
+          <div class="fmt" data-ru="60–90 минут<br>Онлайн">60–90 минут<br>Онлайн</div>
+        </div>
+        <a href="#contact" class="btn" data-ru='Записаться на консультацию <span class="arw">→</span>'>Консультацияға жазылу <span class="arw">→</span></a>
+      </div>
+
+      <div class="card feat reveal">
+        <div class="ctop"><span class="cnum">02</span><span class="badge">Navigator</span></div>
+        <h3>Opportunity Navigator</h3>
+        <div class="ckk" data-ru="Твоя личная карта возможностей">Сенің жеке мүмкіндіктер картаң</div>
+        <p class="cdesc" data-ru="Этот формат — для того, кто ищет для себя возможность покрупнее. Вместе определяем, какие из нескольких знаний, опыта, идей и направлений выбрать.">Бұл формат — өзіне үлкенірек мүмкіндік іздеп жүрген адамға. Бірнеше білім, тәжірибе, идея мен бағыттың ішінен қайсысын таңдау керегін бірге анықтаймыз.</p>
+        <ul class="feats">
+          <li data-ru="Твоя текущая точка и ценность">Қазіргі нүктең және құндылығың</li>
+          <li data-ru="Скрытые возможности">Жасырын мүмкіндіктер</li>
+          <li data-ru="Коммерческие направления">Коммерциялық бағыттар</li>
+          <li data-ru="Приоритетная возможность и точки роста">Басым мүмкіндік пен өсу нүктелері</li>
+        </ul>
+        <div class="price-row">
+          <div class="price">120 000 ₸</div>
+          <div class="fmt" data-ru="Сессия +<br>карта возможностей">Сессия +<br>мүмкіндік картасы</div>
+        </div>
+        <a href="#contact" class="btn" data-ru='Записаться на Navigator <span class="arw">→</span>'>Navigator-ға жазылу <span class="arw">→</span></a>
+      </div>
+
+      <div class="card reveal">
+        <div class="ctop"><span class="cnum">03</span><span class="badge" data-ru="Сопровождение">Сүйемелдеу</span></div>
+        <h3 data-ru="От возможности до дела">Мүмкіндіктен іске дейін</h3>
+        <div class="ckk" data-ru="1 месяц личного сопровождения">1 ай жеке сүйемелдеу</div>
+        <p class="cdesc" data-ru="Определить направление — первый шаг. Теперь его нужно запустить. Вместе развиваем выбранное направление и доводим до конкретного предложения, клиента и первого дохода.">Бағытты анықтау — бірінші қадам. Енді оны іске қосу керек. Таңдаған бағытты бірге дамытып, нақты ұсынысқа, клиентке және алғашқы табысқа жеткіземіз.</p>
+        <ul class="feats">
+          <li data-ru="Позиция, концепция, аудитория">Позиция, концепция, аудитория</li>
+          <li data-ru="Коммерческое предложение и модель цены">Коммерциялық ұсыныс пен баға моделі</li>
+          <li data-ru="Стратегия продаж и направление контента">Сату стратегиясы мен контент бағыты</li>
+          <li data-ru="Постоянная обратная связь и сопровождение">Тұрақты кері байланыс пен бағыттау</li>
+        </ul>
+        <div class="price-row">
+          <div class="price">250 000 ₸</div>
+          <div class="fmt" data-ru="1 месяц<br>личной работы">1 ай<br>жеке жұмыс</div>
+        </div>
+        <a href="#contact" class="btn" data-ru='Заявка на сопровождение <span class="arw">→</span>'>Сүйемелдеуге өтініш <span class="arw">→</span></a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DECISION GUIDE -->
+<section class="sec decide">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">06</span><span class="bar"></span>Какая услуга тебе нужна?'><span class="num">06</span><span class="bar"></span>Қай қызмет саған керек?</div>
+      <h2 data-ru="Узнай себя в этих трёх фразах">Өзіңді осы үш сөзден таны</h2>
+    </div>
+    <div class="decide-grid reveal">
+      <a href="#services" class="dcard">
+        <div class="q" data-ru="«Я хочу понять свою возможность.»">«Мен өзімдегі мүмкіндікті түсінгім келеді.»</div>
+        <div class="arrow">→</div>
+        <div class="ans" data-ru="Личная консультация">Жеке консультация</div>
+      </a>
+      <a href="#services" class="dcard">
+        <div class="q" data-ru="«У меня много возможностей. Не знаю, какую выбрать.»">«Менде көп мүмкіндік бар. Қайсысын таңдау керегін білмеймін.»</div>
+        <div class="arrow">→</div>
+        <div class="ans">Opportunity Navigator</div>
+      </a>
+      <a href="#services" class="dcard">
+        <div class="q" data-ru="«Я знаю своё направление и хочу его запустить.»">«Мен бағытымды білемін, енді іске қосқым келеді.»</div>
+        <div class="arrow">→</div>
+        <div class="ans" data-ru="Личное сопровождение">Жеке сүйемелдеу</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">07</span><span class="bar"></span>Как мы работаем'><span class="num">07</span><span class="bar"></span>Қалай жұмыс істейміз</div>
+      <h2 data-ru="Путь от мысли до системы">Ойдан жүйеге дейінгі жол</h2>
+      <p class="sub" data-ru="В ходе консультации мы проходим шесть конкретных этапов.">Консультация барысында біз алты нақты кезеңнен өтеміз.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step-row">
+        <div class="sidx">01</div>
+        <h3 data-ru="Анализ текущей ситуации">Қазіргі жағдайды талдау</h3>
+        <p data-ru="Рассматриваем твои знания, опыт, способности, интересы и текущее профессиональное положение.">Білімің, тәжірибең, қабілетің, қызығушылығың және қазіргі кәсіби жағдайың қарастырылады.</p>
+      </div>
+      <div class="step-row">
+        <div class="sidx">02</div>
+        <h3 data-ru="Исследование мышления">Ойлау қабілетін зерттеу</h3>
+        <p data-ru="Какие проблемы ты можешь решать? Что понимаешь лучше других? Какую ценность считаешь чем-то само собой разумеющимся?">Қандай мәселелерді шеше аласың? Нені басқалардан жақсы түсінесің? Қандай құндылықты қалыпты нәрсе деп қабылдайсың?</p>
+      </div>
+      <div class="step-row">
+        <div class="sidx">03</div>
+        <h3 data-ru="Выявление скрытых возможностей">Жасырын мүмкіндіктерді анықтау</h3>
+        <p data-ru="Вместе определяем коммерческие направления, которых ты сам не замечаешь.">Сен өзің байқамай жүрген коммерциялық бағыттарды бірге анықтаймыз.</p>
+      </div>
+      <div class="step-row">
+        <div class="sidx">04</div>
+        <h3 data-ru="Фильтрация направлений">Бағыттарды сүзу</h3>
+        <p data-ru="Из нескольких идей определяем, какое направление тебе подходит и какое стоит рассмотреть первым.">Бірнеше идеяның ішінен қай бағыт саған сәйкес келетінін және қайсысын бірінші қарастыру керегін анықтаймыз.</p>
+      </div>
+      <div class="step-row">
+        <div class="sidx">05</div>
+        <h3 data-ru="Монетизация">Монетизация</h3>
+        <p data-ru="Рассматриваем возможность превратить твои знания, опыт или способности в услугу, продукт, бизнес-модель или новый источник дохода.">Біліміңді, тәжірибеңді немесе қабілетіңді қызметке, өнімге, бизнес-модельге немесе жаңа табыс көзіне айналдыру мүмкіндігін қарастырамыз.</p>
+      </div>
+      <div class="step-row">
+        <div class="sidx">06</div>
+        <h3 data-ru="Следующий шаг">Келесі қадам</h3>
+        <p data-ru="После консультации у тебя будет конкретное направление действий — ясно, куда и как двигаться.">Консультациядан кейін нақты әрекет бағыты болады — қайда және қалай қозғалу керегі айқын.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="sec decide" id="who">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">08</span><span class="bar"></span>Для кого'><span class="num">08</span><span class="bar"></span>Кімге арналған</div>
+      <h2 data-ru="Эта работа — для того, кто готов действовать">Бұл жұмыс — әрекет етуге дайын адамға</h2>
+    </div>
+    <div class="who-grid reveal">
+      <div class="who-col yes left">
+        <h3 data-ru='<span class="ico">+</span>Для тебя'><span class="ico">+</span>Саған арналған</h3>
+        <div class="sm" data-ru="Если это про тебя">Егер бұл сен болсаң</div>
+        <ul>
+          <li data-ru="специалистам и предпринимателям">мамандар мен кәсіпкерлерге</li>
+          <li data-ru="тем, кто хочет начать бизнес">бизнес бастағысы келетіндерге</li>
+          <li data-ru="тем, кто хочет монетизировать свои знания">өз білімін монетизациялағысы келетіндерге</li>
+          <li data-ru="тем, кто ищет новое направление">жаңа бағыт іздеп жүргендерге</li>
+          <li data-ru="тем, кто мечется между несколькими идеями">бірнеше идеяның арасында жүргендерге</li>
+          <li data-ru="тем, кто хочет полностью раскрыть свой профессиональный потенциал">кәсіби потенциалын толық ашқысы келетіндерге</li>
+          <li data-ru="тем, кто чувствует «я способен на большее»">«менің қолымнан бұдан да көп нәрсе келеді» деп сезінетіндерге</li>
+        </ul>
+      </div>
+      <div class="who-col no">
+        <h3 data-ru='<span class="ico">–</span>Не для тебя'><span class="ico">–</span>Арналмаған</h3>
+        <div class="sm" data-ru="Этот формат не подойдёт">Бұл формат сәйкес емес</div>
+        <ul>
+          <li data-ru="тем, кто хочет, чтобы готовый бизнес-план сделал кто-то другой">дайын бизнес-жоспарды біреуге жасатып алғысы келетіндерге</li>
+          <li data-ru="тем, кто ждёт, что все решения примет консультант">барлық шешімді консультанттың қабылдауын күтетіндерге</li>
+          <li data-ru="тем, кто ищет только мотивацию">тек мотивация іздейтіндерге</li>
+          <li data-ru="тем, кто не готов действовать сам">өз тарапынан әрекет жасауға дайын емес адамдарға</li>
+        </ul>
+      </div>
+    </div>
+    <div class="principle reveal">
+      <div class="pl" data-ru="Основной принцип">Негізгі қағида</div>
+      <p data-ru="Я не строю за тебя твою жизнь или бизнес.">Мен сенің орныңа өміріңді немесе бизнесіңді құрмаймын.</p>
+      <p data-ru="Я помогаю тебе увидеть свою возможность и превратить её в дело.">Мен сенің өзіңнің мүмкіндігіңді көруге және оны іске айналдыруға көмектесемін.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker" data-ru='<span class="num">09</span><span class="bar"></span>Частые вопросы'><span class="num">09</span><span class="bar"></span>Жиі қойылатын сұрақтар</div>
+      <h2>FAQ</h2>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <button class="faq-q" data-ru='Это очередной мотивационный тренинг?<span class="pm"></span>'>Бұл тағы бір мотивациялық тренинг пе?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="Нет. Это не мотивационная встреча. Это личная стратегическая сессия, на которой анализируются твои текущие профессиональные и коммерческие возможности. В результате — конкретная карта возможностей, приоритетное направление и план первых действий.">Жоқ. Бұл мотивациялық кездесу емес. Бұл — сенің қазіргі кәсіби және коммерциялық мүмкіндіктеріңді талдайтын жеке стратегиялық сессия. Нәтижесінде нақты мүмкіндіктер картасы, басым бағыт және алғашқы әрекет жоспары болады.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" data-ru='У меня пока нет конкретной идеи. Мне можно прийти?<span class="pm"></span>'>Менде әлі нақты идея жоқ. Маған келуге бола ма?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="Да. Если ты не знаешь, в каком направлении двигаться, не понимаешь, какая у тебя есть возможность, или застрял между несколькими идеями — эта работа именно для тебя. Мы не останавливаемся на одной идее, а видим в твоих знаниях и опыте несколько возможных направлений.">Иә. Қай бағытта жүру керегін білмесең, өзіңде қандай мүмкіндік бар екенін түсінбесең немесе бірнеше идеяның арасында қалып қойсаң — дәл осы жұмыс саған арналған. Біз бір идеямен тоқтап қалмай, білімің мен тәжірибеңнен бірнеше ықтимал бағытты көреміз.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" data-ru='Ты придумаешь бизнес за меня?<span class="pm"></span>'>Сен менің орныма бизнес ойлап бересің бе?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="Нет. Я не строю за тебя твою жизнь или бизнес. Моя работа — помочь тебе увидеть, структурировать и превратить в коммерцию твою собственную возможность. Решение и действие остаются за тобой.">Жоқ. Мен сенің орныңа өміріңді немесе бизнесіңді құрмаймын. Менің жұмысым — сенің өзіңнің мүмкіндігіңді көруге, құрылымдауға және коммерцияға айналдыруға көмектесу. Шешім мен әрекет сенде қалады.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" data-ru='Какой формат мне выбрать?<span class="pm"></span>'>Қай форматты таңдауым керек?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="Если «хочу понять свою возможность» — Личная консультация. Если «возможностей много, не знаю, какую выбрать» — Opportunity Navigator. Если «знаю своё направление, хочу запустить» — Личное сопровождение.">«Мүмкіндігімді түсінгім келеді» десең — Жеке консультация. «Көп мүмкіндік бар, қайсысын таңдау керегін білмеймін» десең — Opportunity Navigator. «Бағытымды білемін, іске қосқым келеді» десең — Жеке сүйемелдеу.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" data-ru='Как проходит консультация и сколько длится?<span class="pm"></span>'>Консультация қалай өтеді және қанша уақыт алады?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="Личная консультация проходит онлайн, 60–90 минут. Мы проходим шесть этапов: анализ текущей ситуации, исследование мышления, выявление скрытых возможностей, фильтрация направлений, монетизация и следующий шаг.">Жеке консультация онлайн форматта, 60–90 минут. Біз алты кезеңнен өтеміз: қазіргі жағдайды талдау, ойлауды зерттеу, жасырын мүмкіндіктерді анықтау, бағыттарды сүзу, монетизация және келесі қадам.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" data-ru='Что конкретно я получу в результате?<span class="pm"></span>'>Нәтижесінде нақты не аламын?<span class="pm"></span></button>
+        <div class="faq-a"><div class="inner" data-ru="В зависимости от формата: карта возможностей, приоритетное направление, коммерческие направления и точки монетизации, план первых действий и точки роста. То есть идея не останется в голове, а превратится в путь к конкретному предложению, клиенту и доходу.">Форматқа қарай: мүмкіндіктер картасы, басым бағыт, коммерциялық бағыттар мен монетизация нүктелері, алғашқы әрекет жоспары және өсу нүктелері. Яғни идея ойда қалмай, нақты ұсынысқа, клиентке және табысқа апаратын жолға айналады.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="contact">
+  <div class="wrap">
+    <div class="kicker reveal" data-ru='<span class="num">10</span><span class="bar"></span>Финальное предложение'><span class="num">10</span><span class="bar"></span>Финалдық офер</div>
+    <h2 class="reveal" data-ru='Не <em>думай,</em> что у тебя нет новой возможности.'>Сенде жаңа мүмкіндік жоқ деп <em>ойлама.</em></h2>
+    <p class="ftext reveal" data-ru="Возможно, ты ещё не назвал её правильно. Возможно, ты не увидел её как бизнес. Возможно, ты не оценил её как ценность, которая превращается в деньги.">Мүмкін сен оны әлі дұрыс атаған жоқсың. Мүмкін сен оны бизнес ретінде көрмедің. Мүмкін сен оны ақшаға айналатын құндылық ретінде бағаламадың.</p>
+    <div class="fwords reveal">
+      <span data-ru="Знания — <b>возможность</b>">Білімің — <b>мүмкіндік</b></span>
+      <span data-ru="Опыт — <b>возможность</b>">Тәжірибең — <b>мүмкіндік</b></span>
+      <span data-ru="Способности — <b>возможность</b>">Қабілетің — <b>мүмкіндік</b></span>
+      <span data-ru="Мысль — <b>возможность</b>">Ойың — <b>мүмкіндік</b></span>
+    </div>
+    <p class="closing reveal" data-ru="Теперь давай определим, какую из них ты запустишь.">Енді оның қайсысын іске қосатыныңды анықтайық.</p>
+    <a href="https://wa.me/77051121112" class="btn reveal" data-ru='Записаться в WhatsApp <span class="arw">→</span>'>WhatsApp арқылы жазылу <span class="arw">→</span></a>
+
+    <div class="lead-wrap reveal">
+      <form id="leadForm" class="lead-form">
+        <div class="lead-title" data-ru="Или оставь заявку — я свяжусь с тобой">Немесе өтінім қалдыр — мен сізбен хабарласамын</div>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="lf-row">
+          <div>
+            <label data-ru="Имя">Атыңыз</label>
+            <input type="text" name="name" required>
+          </div>
+          <div>
+            <label data-ru="Телефон">Телефон</label>
+            <input type="tel" name="phone" placeholder="+7 7xx xxx xx xx" required>
+          </div>
+        </div>
+        <div class="lf-row">
+          <div>
+            <label data-ru="Email">Email</label>
+            <input type="email" name="email" required>
+          </div>
+          <div>
+            <label data-ru="Услуга">Қызмет</label>
+            <select name="service">
+              <option value="consultation" data-ru="Личная консультация">Жеке консультация</option>
+              <option value="navigator">Opportunity Navigator</option>
+              <option value="support" data-ru="Личное сопровождение">Жеке сүйемелдеу</option>
+              <option value="other" data-ru="Другое">Басқа</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label data-ru="Сообщение">Хабарлама</label>
+          <textarea name="message"></textarea>
+        </div>
+        <button type="submit" class="lead-btn" data-ru="Оставить заявку">Өтінім қалдыру</button>
+        <div id="leadStatus" class="lead-status" role="status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <h3 data-ru="Навигатор возможностей">Мүмкіндіктер навигаторы</h3>
+        <div class="slg" data-ru="Мысль — в возможность.<br>Знания — в ценность.<br>Способности — в доход.">Ойыңды — мүмкіндікке.<br>Біліміңді — құндылыққа.<br>Қабілетіңді — табысқа.</div>
+      </div>
+      <div class="foot-col">
+        <h4 data-ru="Навигация">Навигация</h4>
+        <a href="#about" data-ru="Кто я">Мен кіммін</a>
+        <a href="#services" data-ru="Услуги">Қызметтер</a>
+        <a href="#how" data-ru="Как мы работаем">Қалай жұмыс істейміз</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h4 data-ru="Контакты">Байланыс</h4>
+        <a href="https://wa.me/77051121112">WhatsApp · +7 705 112 11 12</a>
+        <a href="#contact" data-ru="Записаться на консультацию">Консультацияға жазылу</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span data-ru="© 2026 Навигатор возможностей">© 2026 Мүмкіндіктер навигаторы</span>
+      <span data-ru="Преврати свою мысль в возможность.">Ойыңды мүмкіндікке айналдыр.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // nav scroll state
+  const nav=document.getElementById('nav');
+  const onScroll=()=>{nav.classList.toggle('scrolled',window.scrollY>30)};
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+
+  // mobile menu
+  const burger=document.getElementById('burger');
+  const mm=document.getElementById('mobileMenu');
+  const toggle=()=>{mm.classList.toggle('open');document.body.style.overflow=mm.classList.contains('open')?'hidden':''};
+  burger.addEventListener('click',toggle);
+  mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mm.classList.remove('open');document.body.style.overflow=''}));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q=>{
+    q.addEventListener('click',()=>{
+      const item=q.parentElement;
+      const a=item.querySelector('.faq-a');
+      const open=item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=>{i.classList.remove('open');i.querySelector('.faq-a').style.maxHeight=null});
+      if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px'}
+    });
+  });
+
+  // reveal on scroll
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(Math.min(i%4,3)*0.07)+'s';io.observe(el)});
+
+  // language switch (KZ default / RU)
+  const LANG_KEY='nav_lang';
+  const langBtns=document.querySelectorAll('.lang button');
+  function applyLang(lang){
+    document.querySelectorAll('[data-ru]').forEach(el=>{
+      if(el.dataset.kzHtml===undefined) el.dataset.kzHtml=el.innerHTML;
+      el.innerHTML = (lang==='ru') ? el.dataset.ru : el.dataset.kzHtml;
+    });
+    document.documentElement.lang = (lang==='ru') ? 'ru' : 'kk';
+    langBtns.forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
+    try{localStorage.setItem(LANG_KEY,lang)}catch(e){}
+    // keep an open FAQ panel at correct height after text length changes
+    document.querySelectorAll('.faq-item.open .faq-a').forEach(a=>{a.style.maxHeight=a.scrollHeight+'px'});
+  }
+  let savedLang='kz';
+  try{savedLang=localStorage.getItem(LANG_KEY)||'kz'}catch(e){}
+  langBtns.forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+  applyLang(savedLang);
+
+  // lead form -> POST /api/requests
+  const leadForm=document.getElementById('leadForm');
+  if(leadForm){
+    const statusEl=document.getElementById('leadStatus');
+    const btn=leadForm.querySelector('.lead-btn');
+    leadForm.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const ru=document.documentElement.lang==='ru';
+      statusEl.className='lead-status';statusEl.textContent='';
+      btn.disabled=true;
+      try{
+        const res=await fetch('/api/requests',{method:'POST',body:new FormData(leadForm)});
+        const data=await res.json().catch(()=>({}));
+        if(res.ok&&data.ok){
+          statusEl.classList.add('ok');
+          statusEl.textContent=ru?'Спасибо! Заявка принята.':'Рахмет! Өтінім қабылданды.';
+          leadForm.reset();
+        }else if(res.status===429){
+          statusEl.classList.add('err');
+          statusEl.textContent=ru?'Слишком много попыток. Попробуйте позже.':'Тым көп әрекет. Кейінірек көріңіз.';
+        }else{
+          statusEl.classList.add('err');
+          statusEl.textContent=ru?'Проверьте имя, телефон и email.':'Аты, телефон және email-ді тексеріңіз.';
+        }
+      }catch(err){
+        statusEl.classList.add('err');
+        statusEl.textContent=ru?'Ошибка сети. Попробуйте ещё раз.':'Желі қатесі. Қайталап көріңіз.';
+      }finally{
+        btn.disabled=false;
+      }
+    });
+  }
+</script>
+</body>
+</html>
